@@ -10,7 +10,7 @@ export const isAuthenticated = async (req, res) => {
   const { token } = req.cookies;
   if (token) {
     // console.log(token);
-    const decoded = jwt.verify(token, "secterte");
+    const decoded = jwt.verify(token, KEY);
     const user_decoded = await User.findById(decoded._id);
     if (user_decoded) {
       res.status(200);
@@ -65,7 +65,7 @@ export const Login = async (req, res) => {
   }
   const isMatch = await bcrypt.compare(password, user.password);
   if (isMatch) {
-    const token = jwt.sign({ _id: user._id }, "secterte");
+    const token = jwt.sign({ _id: user._id }, KEY);
     res.cookie("token", token, {
       httpOnly: true,
       expires: new Date(Date.now() + 60 * 60 * 24 * 30 * 1000),
