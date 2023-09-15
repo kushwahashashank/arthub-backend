@@ -2,14 +2,14 @@ import User from "../Models/Signup.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
+
 dotenv.config();
 const KEY = process.env.SECRET_KEY;
 
 //Check if user is login or not
 export const isAuthenticated = async (req, res) => {
-  const { token } = req.cookies;
+  const token = JSON.parse(req.body.token);
   if (token) {
-    // console.log(token);
     const decoded = jwt.verify(token, KEY);
     const user_decoded = await User.findById(decoded._id);
     if (user_decoded) {
@@ -19,6 +19,7 @@ export const isAuthenticated = async (req, res) => {
       res.sendStatus(202);
     }
   } else {
+    console.log("inv");
     res.sendStatus(202);
   }
 };
@@ -36,24 +37,15 @@ export const Register = async (req, res) => {
       cart,
     });
     const token = jwt.sign({ _id: user._id }, KEY);
-    res.cookie("token", token, {
-      httpOnly: true,
-      expires: new Date(Date.now() + 60 * 60 * 24 * 30 * 1000),
-    });
     res.status(201);
-    res.send(user);
+    var v = {
+      user: user,
+      token: token,
+    };
+    res.send(v);
   } else {
     res.sendStatus(202);
   }
-};
-
-//Logout User
-export const Logout = async (req, res) => {
-  res.cookie("token", null, {
-    httpOnly: true,
-    expires: new Date(Date.now()),
-  });
-  res.sendStatus(200);
 };
 
 // Login user
@@ -66,12 +58,12 @@ export const Login = async (req, res) => {
   const isMatch = await bcrypt.compare(password, user.password);
   if (isMatch) {
     const token = jwt.sign({ _id: user._id }, KEY);
-    res.cookie("token", token, {
-      httpOnly: true,
-      expires: new Date(Date.now() + 60 * 60 * 24 * 30 * 1000),
-    });
     res.status(200);
-    res.send(user);
+    var v = {
+      user: user,
+      token: token,
+    };
+    res.send(v);
   } else {
     res.sendStatus(203);
   }

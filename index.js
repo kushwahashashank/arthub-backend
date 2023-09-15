@@ -6,7 +6,6 @@ import dotenv from "dotenv";
 
 import {
   Login,
-  Logout,
   Register,
   isAuthenticated,
 } from "./Middlewares/Authentication.js";
@@ -22,8 +21,7 @@ app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
 
-app.get("/isauthenticated", isAuthenticated);
-app.get("/logout", Logout);
+app.post("/isauthenticated", isAuthenticated);
 app.post("/register", Register);
 app.post("/login", Login);
 app.post("/sendmessage", Contact);
